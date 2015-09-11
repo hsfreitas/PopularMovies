@@ -26,5 +26,14 @@ public class Constants {
     public static final String EXTRA_RELEASE_DATE = "extra_release_date";
     public static final String EXTRA_OVERVIEW = "extra_overview";
 
+    //Recreating Activity constants
+    public static final String MOV_STATE = "mov_state";
+    public static final String MOV_ROTATION = "mov_rotation";
+
+    //Shared preferences
+    public static final String SHARE_STATE_POPULARITY = "share_popularity";
+    public static final int SHARE_MODE_PRIVATE = 0;
+
+
 
 }

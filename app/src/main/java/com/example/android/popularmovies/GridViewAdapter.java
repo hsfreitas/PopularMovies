@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,15 +19,15 @@ public class GridViewAdapter extends BaseAdapter {
 
     private Context context;
 
-    public void setItems(List<String> items) {
+    public void setItems(ArrayList<String> items) {
         this.items = items;
     }
 
-    private List<String> items;
+    private ArrayList<String> items;
 
 
 
-    public GridViewAdapter(Context context, List<String> items){
+    public GridViewAdapter(Context context, ArrayList<String> items){
         super();
         this.context = context;
         this.items = items;
