@@ -2,12 +2,12 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,10 +55,10 @@ public class PopMoviesFragment extends Fragment{
     private String jsonAddress;
     private ArrayList<Movies> moviesDbsList = new ArrayList<>();
     private Movies mMovies = new Movies();
-    private FetchMovierTask test;
+    private FetchMovieTask test;
     private Bundle mState = new Bundle();
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor sharedPreferencesEdit;
+    //private SharedPreferences sharedPreferences;
+    //private SharedPreferences.Editor sharedPreferencesEdit;
 
 
 
@@ -86,14 +86,12 @@ public class PopMoviesFragment extends Fragment{
         int  id = item.getItemId();
 
         if(R.id.action_most_popular == id){
-            FetchMovierTask test = new FetchMovierTask();
-            test.execute("popularity.desc");
+            sortDefault();
 
             return true;
         }else if (R.id.action_most_rated == id){
 
-            FetchMovierTask test = new FetchMovierTask();
-            test.execute("vote_count.desc");
+            sortCount();
 
             return true;
         }
@@ -125,8 +123,7 @@ public class PopMoviesFragment extends Fragment{
                 gridAdapter.setItems(mImageList);
             }else{
 
-                test = new FetchMovierTask();
-                test.execute("popularity.desc");
+                sortDefault();
 
             }
 
@@ -191,17 +188,33 @@ public class PopMoviesFragment extends Fragment{
         return isAvailable;
     }
 
-    private void updateWeather(){}
+    private void sortDefault(){
+        FetchMovieTask weatherTaskUpdate = new FetchMovieTask();
+        String preference= PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_sort_vote_count),
+                getString(R.string.pref_sort_default));
+        weatherTaskUpdate.execute(preference);
+    }
 
+    private void sortCount(){
+        FetchMovieTask weatherTaskUpdate = new FetchMovieTask();
+        String preference= PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_sort_default),
+                getString(R.string.pref_sort_vote_count));
+        weatherTaskUpdate.execute(preference);
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        //sortDefault();
+    }
 
     /**
      * Fechting Data from MoviesDB
      */
 
-    public class FetchMovierTask extends AsyncTask<String, Void, String[]> {
+    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
 
-        public final String TAG = FetchMovierTask.class.getSimpleName();
+        public final String TAG = FetchMovieTask.class.getSimpleName();
 
 
 
@@ -222,7 +235,7 @@ public class PopMoviesFragment extends Fragment{
             String moviesJsonStr = null;
 
             //String my api Key
-            String apiKey = "";
+            String apiKey = "d3b372f7ac246b674bc0d57687d077f0";
 
 
             try {

@@ -18,6 +18,8 @@ public class Movies implements Parcelable {
     private String release_date;
     private String mVote_average;
     private String mOverview;
+    private String mMovieId;
+    private String[] mMovieIdArray;
     private JSONObject[] mJsonListMovies;
     private String mPoster_path;
     private String[] mMovielist;
@@ -125,7 +127,7 @@ public class Movies implements Parcelable {
 
         // MOV returns list of results from themoviedb API
 
-
+        mMovieIdArray = new String[moviesArray.length()];
         mPosterPathStr = new String[moviesArray.length()];
         mJsonListMovies = new JSONObject[moviesArray.length()];
         for(int i = 0; i < moviesArray.length(); i++) {
@@ -143,18 +145,27 @@ public class Movies implements Parcelable {
 
             mJsonListMovies[i] = movie;
 
+            mMovieId = movie.getString(Constants.MOV_ID);
+            mMovieIdArray[i] = mMovieId;
+
         }
 
 
         for (int i = 0 ; i < mPosterPathStr.length; i++) {
             //Log.v(TAG, "Movies entry: " + s);
             mPosterPathStr[i] = "http://image.tmdb.org/t/p/w185/" + mPosterPathStr[i];
-
+            mMovieIdArray[i] = "http://api.themoviedb.org/3/movie/"+mMovieIdArray[i]+"/videos?api_key=d3b372f7ac246b674bc0d57687d077f0";
 
         }
+        String[] test = mMovieIdArray;
 
         return mPosterPathStr;
 
+    }
+
+    public String[] getMovies(){
+
+        return null;
     }
 
 
