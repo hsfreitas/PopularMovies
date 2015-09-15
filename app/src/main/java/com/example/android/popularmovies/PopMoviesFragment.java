@@ -312,7 +312,7 @@ public class PopMoviesFragment extends Fragment{
         @Override
         protected void onPostExecute(String[] result) {
             super.onPreExecute();
-
+            //Movie fetch Implementation TODO
             //List<String> dataFromApi = new ArrayList<String>(Arrays.asList(result));
             if(result !=null){
 
