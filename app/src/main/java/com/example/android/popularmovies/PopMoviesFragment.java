@@ -191,6 +191,8 @@ public class PopMoviesFragment extends Fragment{
         return isAvailable;
     }
 
+    private void updateWeather(){}
+
 
 
     /**
