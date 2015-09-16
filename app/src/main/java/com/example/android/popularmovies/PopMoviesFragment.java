@@ -38,7 +38,7 @@ import java.util.Arrays;
 public class PopMoviesFragment extends Fragment{
 
     public final String TAG = PopMoviesFragment.class.getSimpleName();
-    public String[] movielistStr;
+    public Movies[] movielist;
     private ArrayList<String> mImageList;
     private GridView gridView;
     private GridViewAdapter gridAdapter;
@@ -57,6 +57,7 @@ public class PopMoviesFragment extends Fragment{
     private Movies mMovies = new Movies();
     private FetchMovieTask test;
     private Bundle mState = new Bundle();
+    private FetchData mydata = new FetchData();
     //private SharedPreferences sharedPreferences;
     //private SharedPreferences.Editor sharedPreferencesEdit;
 
@@ -115,11 +116,13 @@ public class PopMoviesFragment extends Fragment{
         gridAdapter = new GridViewAdapter(getActivity().getApplicationContext(), mImageList);
         gridView.setAdapter(gridAdapter);
 
+
+
         if(isNetworkAvailable()){
 
             if(savedInstanceState != null){
                 mImageList = savedInstanceState.getStringArrayList(Constants.MOV_STATE);
-                mMovies = savedInstanceState.getParcelable(Constants.MOV_ROTATION);
+                movielist = (Movies[]) savedInstanceState.getParcelableArray(Constants.MOV_ROTATION);
                 gridAdapter.setItems(mImageList);
             }else{
 
@@ -139,18 +142,12 @@ public class PopMoviesFragment extends Fragment{
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 //Toast.makeText(getActivity(), "test", Toast.LENGTH_LONG).show();
-                mLocalListmovies = mMovies.getmJsonListMovies();
 
-                try {
+                original_title = movielist[i].getmOriginal_title();
+                release_date = movielist[i].getRelease_date();
+                vote_average = movielist[i].getmVote_average();
+                overview = movielist[i].getmOverview();
 
-                    original_title = mLocalListmovies[i].getString(Constants.MOV_ORIGINAL_TITLE);
-                    release_date = mLocalListmovies[i].getString(Constants.MOV_RELEASE_DATE);
-                    vote_average = mLocalListmovies[i].getString(Constants.MOV_VOTE_AVERAGE);
-                    overview = mLocalListmovies[i].getString(Constants.MOV_OVERVIEW);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 String imov = gridAdapter.getItem(i).toString();
                 Intent intent = new Intent(getActivity(), MovieDetailsActivity.class)
                         .putExtra(Constants.EXTRA_TEXT_MOV, imov)
@@ -172,7 +169,7 @@ public class PopMoviesFragment extends Fragment{
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(Constants.MOV_STATE, mImageList);
-        outState.putParcelable(Constants.MOV_ROTATION, mMovies);
+        outState.putParcelableArray(Constants.MOV_ROTATION, movielist);
 
 
     }
@@ -212,14 +209,14 @@ public class PopMoviesFragment extends Fragment{
      * Fechting Data from MoviesDB
      */
 
-    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
+    public class FetchMovieTask extends AsyncTask<String, Void, Movies[]> {
 
         public final String TAG = FetchMovieTask.class.getSimpleName();
 
 
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected Movies[] doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
 
@@ -235,7 +232,7 @@ public class PopMoviesFragment extends Fragment{
             String moviesJsonStr = null;
 
             //String my api Key
-            String apiKey = "d3b372f7ac246b674bc0d57687d077f0";
+            String apiKey = "";
 
 
             try {
@@ -301,7 +298,9 @@ public class PopMoviesFragment extends Fragment{
             }
 
             try {
-                return movielistStr = mMovies.getPosterAddress(moviesJsonStr);
+                movielist = new Movies[20];
+
+                return movielist = mydata.getPosterAddress(moviesJsonStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -310,13 +309,26 @@ public class PopMoviesFragment extends Fragment{
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(Movies[] result) {
             super.onPreExecute();
             //Movie fetch Implementation TODO
             //List<String> dataFromApi = new ArrayList<String>(Arrays.asList(result));
-            if(result !=null){
+            String[] arrayPoster = new String[result.length];
 
-                mImageList = new ArrayList<String>(Arrays.asList(result));
+            for(int i = 0; i < result.length; i++){
+                arrayPoster[i] = result[i].getmPoster_path();
+            }
+
+            for (int i = 0 ; i < arrayPoster.length; i++) {
+            //Log.v(TAG, "Movies entry: " + s);
+            arrayPoster[i] = "http://image.tmdb.org/t/p/w185/" + arrayPoster[i];
+            //mMovieIdArray[i] = "http://api.themoviedb.org/3/movie/"+mMovieIdArray[i]+"/videos?api_key=d3b372f7ac246b674bc0d57687d077f0";
+
+            }
+
+            if(arrayPoster !=null){
+
+                mImageList = new ArrayList<String>(Arrays.asList(arrayPoster));
                 gridAdapter.notifyDataSetChanged();
                 // New data the server.
                 gridAdapter.setItems(mImageList);

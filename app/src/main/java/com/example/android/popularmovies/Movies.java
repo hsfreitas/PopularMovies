@@ -7,20 +7,38 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 /**
  * Created by hamilton.freitas on 2015-09-08.
  */
 public class Movies implements Parcelable {
 
+
+
+    private String mID;
     private String mOriginal_title;
-    private String release_date;
+    private String mRelease_date;
     private String mVote_average;
     private String mOverview;
     private String mMovieId;
     private String[] mMovieIdArray;
     private JSONObject[] mJsonListMovies;
+
+    public String getmRelease_date() {
+        return mRelease_date;
+    }
+
+    public void setmRelease_date(String mRelease_date) {
+        this.mRelease_date = mRelease_date;
+    }
+
+    public String getmMovieId() {
+        return mMovieId;
+    }
+
+    public void setmMovieId(String mMovieId) {
+        this.mMovieId = mMovieId;
+    }
+
     private String mPoster_path;
     private String[] mMovielist;
     private String[] mPosterPathStr;
@@ -29,10 +47,11 @@ public class Movies implements Parcelable {
 
     public Movies(){}
 
-    public Movies(String[] posterPathStr, String title, String release_d, String vote_v, String overview){
-        this.mPosterPathStr = posterPathStr;
+    public Movies(String id, String poster, String title, String release_d, String vote_v, String overview){
+        this.mID = id;
+        this.mPoster_path = poster;
         this.mOriginal_title = title;
-        this.release_date = release_d;
+        this.mRelease_date = release_d;
         this.mVote_average = vote_v;
         this.mOverview = overview;
     }
@@ -40,7 +59,7 @@ public class Movies implements Parcelable {
 
     public Movies(Parcel in){
         this.mOriginal_title = in.readString();
-        this.release_date = in.readString();
+        this.mRelease_date = in.readString();
         this.mVote_average = in.readString();
         this.mOverview =in.readString();
     }
@@ -69,6 +88,14 @@ public class Movies implements Parcelable {
         this.mOriginal_title = mOriginal_title;
     }
 
+    public String getmID() {
+        return mID;
+    }
+
+    public void setmID(String mID) {
+        this.mID = mID;
+    }
+
     public String getmPoster_path() {
         return mPoster_path;
     }
@@ -78,11 +105,11 @@ public class Movies implements Parcelable {
     }
 
     public String getRelease_date() {
-        return release_date;
+        return mRelease_date;
     }
 
     public void setRelease_date(String release_date) {
-        this.release_date = release_date;
+        this.mRelease_date = release_date;
     }
 
     public String getmVote_average() {
@@ -130,6 +157,7 @@ public class Movies implements Parcelable {
         mMovieIdArray = new String[moviesArray.length()];
         mPosterPathStr = new String[moviesArray.length()];
         mJsonListMovies = new JSONObject[moviesArray.length()];
+
         for(int i = 0; i < moviesArray.length(); i++) {
 
 
@@ -137,9 +165,18 @@ public class Movies implements Parcelable {
             // Get the JSON object representing the movie
             JSONObject movie = moviesArray.getJSONObject(i);
 
+            mID = movie.getString(Constants.MOV_ID);
 
             //This get movie poster path
             mPoster_path = movie.getString(Constants.MOV_POSTER_PATH);
+
+            mOriginal_title = movie.getString(Constants.MOV_ORIGINAL_TITLE);
+
+            mRelease_date = movie.getString(Constants.MOV_RELEASE_DATE);
+
+            mVote_average = movie.getString(Constants.MOV_VOTE_AVERAGE);
+
+            mOverview = movie.getString(Constants.MOV_OVERVIEW);
 
             mPosterPathStr[i] = mPoster_path;
 
@@ -172,7 +209,7 @@ public class Movies implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {;
         dest.writeString(this.mOriginal_title);
-        dest.writeString(this.release_date);
+        dest.writeString(this.mRelease_date);
         dest.writeString(this.mVote_average);
         dest.writeString(this.mOverview);
 
