@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * Created by hamilton.freitas on 2015-09-15.
  */
-public class FetchData {
+public class ParseMovies {
     private Movies mMovie;
     private Movies[] mMovieArray;
     private String[] mPosterPathStr;
@@ -37,7 +37,7 @@ public class FetchData {
             // Get the JSON object representing the movie
             JSONObject movie = moviesArray.getJSONObject(i);
 
-            mMovie.setmID(movie.getString(Constants.MOV_ID));
+            mMovie.setmMovieId(movie.getString(Constants.MOV_ID));
             mMovie.setmPoster_path(movie.getString(Constants.MOV_POSTER_PATH));
             mMovie.setmOriginal_title(movie.getString(Constants.MOV_ORIGINAL_TITLE));
             mMovie.setmRelease_date(movie.getString(Constants.MOV_RELEASE_DATE));
@@ -56,5 +56,7 @@ public class FetchData {
         return mMovieArray;
 
     }
+
+
 
 }

@@ -35,7 +35,7 @@ import java.util.Arrays;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PopMoviesFragment extends Fragment{
+public class PopMoviesFragment extends Fragment {
 
     public final String TAG = PopMoviesFragment.class.getSimpleName();
     public Movies[] movielist;
@@ -46,6 +46,7 @@ public class PopMoviesFragment extends Fragment{
     private JSONObject movie;
     private String original_title = "";
     private String release_date = "";
+    private String mMovieIdStr = "";
     private JSONObject[] mLocalListmovies;
     private String video;
     private String vote_average = "";
@@ -57,122 +58,123 @@ public class PopMoviesFragment extends Fragment{
     private Movies mMovies = new Movies();
     private FetchMovieTask test;
     private Bundle mState = new Bundle();
-    private FetchData mydata = new FetchData();
+    private ParseMovies mydata = new ParseMovies();
     //private SharedPreferences sharedPreferences;
     //private SharedPreferences.Editor sharedPreferencesEdit;
 
 
-
     public PopMoviesFragment() {}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //This is responsible to set the value menu on the fragment
-        setHasOptionsMenu(true);
+        @Override
+        public void onCreate (Bundle savedInstanceState){
+            super.onCreate(savedInstanceState);
+            //This is responsible to set the value menu on the fragment
 
-    }
+            setHasOptionsMenu(true);
 
-    //This implemented method will inflate the menu of popmovies fragment
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.popmovies_menu, menu);
-
-    }
-
-
-    //This option will select the button refresh on the fragment menu
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int  id = item.getItemId();
-
-        if(R.id.action_most_popular == id){
-            sortDefault();
-
-            return true;
-        }else if (R.id.action_most_rated == id){
-
-            sortCount();
-
-            return true;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        //This implemented method will inflate the menu of popmovies fragment
+        @Override
+        public void onCreateOptionsMenu (Menu menu, MenuInflater inflater){
+            inflater.inflate(R.menu.popmovies_menu, menu);
+
+        }
 
 
+        //This option will select the button refresh on the fragment menu
+        @Override
+        public boolean onOptionsItemSelected (MenuItem item){
+            int id = item.getItemId();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        final String[] imagemov = {};
-
-        mImageList = new ArrayList<String>(Arrays.asList(imagemov));
-
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        gridView = (GridView) rootView.findViewById(R.id.popgridview_id);
-
-        gridAdapter = new GridViewAdapter(getActivity().getApplicationContext(), mImageList);
-        gridView.setAdapter(gridAdapter);
-
-
-
-        if(isNetworkAvailable()){
-
-            if(savedInstanceState != null){
-                mImageList = savedInstanceState.getStringArrayList(Constants.MOV_STATE);
-                movielist = (Movies[]) savedInstanceState.getParcelableArray(Constants.MOV_ROTATION);
-                gridAdapter.setItems(mImageList);
-            }else{
-
+            if (R.id.action_most_popular == id) {
                 sortDefault();
 
+                return true;
+            } else if (R.id.action_most_rated == id) {
+
+                sortCount();
+
+                return true;
             }
 
-        }else{
-            Toast.makeText(getActivity(), R.string.network_unavailbe, Toast.LENGTH_LONG).show();
+            return super.onOptionsItemSelected(item);
         }
 
 
+        @Override
+        public View onCreateView (LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState){
+
+            final String[] imagemov = {};
+
+            mImageList = new ArrayList<String>(Arrays.asList(imagemov));
+
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            gridView = (GridView) rootView.findViewById(R.id.popgridview_id);
+
+            gridAdapter = new GridViewAdapter(getActivity().getApplicationContext(), mImageList);
+            gridView.setAdapter(gridAdapter);
 
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            if (isNetworkAvailable()) {
 
-                //Toast.makeText(getActivity(), "test", Toast.LENGTH_LONG).show();
+                if (savedInstanceState != null) {
+                    mImageList = savedInstanceState.getStringArrayList(Constants.MOV_STATE);
+                    movielist = (Movies[]) savedInstanceState.getParcelableArray(Constants.MOV_ROTATION);
+                    gridAdapter.setItems(mImageList);
+                } else {
 
-                original_title = movielist[i].getmOriginal_title();
-                release_date = movielist[i].getRelease_date();
-                vote_average = movielist[i].getmVote_average();
-                overview = movielist[i].getmOverview();
+                    sortDefault();
 
-                String imov = gridAdapter.getItem(i).toString();
-                Intent intent = new Intent(getActivity(), MovieDetailsActivity.class)
-                        .putExtra(Constants.EXTRA_TEXT_MOV, imov)
-                        .putExtra(Constants.EXTRA_ORIGINAL_TITLE, original_title)
-                        .putExtra(Constants.EXTRA_RELEASE_DATE, release_date)
-                        .putExtra(Constants.EXTRA_VOTE_COUNT, vote_average)
-                        .putExtra(Constants.EXTRA_OVERVIEW, overview);
-                startActivity(intent);
 
+                }
+
+            } else {
+                Toast.makeText(getActivity(), R.string.network_unavailbe, Toast.LENGTH_LONG).show();
             }
-        });
 
 
-        return rootView;
-    }
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    //Set movieID to be used on Review fetch data
+                    mMovies.setmMovieId(movielist[i].getmMovieId());
+
+                    //Toast.makeText(getActivity(), "test", Toast.LENGTH_LONG).show();
+                    mMovieIdStr = movielist[i].getmMovieId();
+                    original_title = movielist[i].getmOriginal_title();
+                    release_date = movielist[i].getRelease_date();
+                    vote_average = movielist[i].getmVote_average();
+                    overview = movielist[i].getmOverview();
+
+                    String imov = gridAdapter.getItem(i).toString();
+                    Intent intent = new Intent(getActivity(), MovieDetailsActivity.class)
+                            .putExtra(Constants.MOV_ID, mMovieIdStr)
+                            .putExtra(Constants.EXTRA_TEXT_MOV, imov)
+                            .putExtra(Constants.EXTRA_ORIGINAL_TITLE, original_title)
+                            .putExtra(Constants.EXTRA_RELEASE_DATE, release_date)
+                            .putExtra(Constants.EXTRA_VOTE_COUNT, vote_average)
+                            .putExtra(Constants.EXTRA_OVERVIEW, overview);
+                    startActivity(intent);
+
+                }
+            });
 
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putStringArrayList(Constants.MOV_STATE, mImageList);
-        outState.putParcelableArray(Constants.MOV_ROTATION, movielist);
+            return rootView;
+        }
 
 
-    }
+        @Override
+        public void onSaveInstanceState (Bundle outState){
+            super.onSaveInstanceState(outState);
+            outState.putStringArrayList(Constants.MOV_STATE, mImageList);
+            outState.putParcelableArray(Constants.MOV_ROTATION, movielist);
+
+
+        }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager)
@@ -185,16 +187,16 @@ public class PopMoviesFragment extends Fragment{
         return isAvailable;
     }
 
-    private void sortDefault(){
+    private void sortDefault() {
         FetchMovieTask weatherTaskUpdate = new FetchMovieTask();
-        String preference= PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_sort_vote_count),
+        String preference = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_sort_vote_count),
                 getString(R.string.pref_sort_default));
         weatherTaskUpdate.execute(preference);
     }
 
-    private void sortCount(){
+    private void sortCount() {
         FetchMovieTask weatherTaskUpdate = new FetchMovieTask();
-        String preference= PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_sort_default),
+        String preference = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_sort_default),
                 getString(R.string.pref_sort_vote_count));
         weatherTaskUpdate.execute(preference);
     }
@@ -202,6 +204,7 @@ public class PopMoviesFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
+
         //sortDefault();
     }
 
@@ -214,13 +217,12 @@ public class PopMoviesFragment extends Fragment{
         public final String TAG = FetchMovieTask.class.getSimpleName();
 
 
-
         @Override
         protected Movies[] doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
 
-            if(params.length == 0){
+            if (params.length == 0) {
                 return null;
             }
 
@@ -231,9 +233,6 @@ public class PopMoviesFragment extends Fragment{
             // Will contain the raw JSON response as a string.
             String moviesJsonStr = null;
 
-            //String my api Key
-            String apiKey = "";
-
 
             try {
 
@@ -242,7 +241,7 @@ public class PopMoviesFragment extends Fragment{
 
                 Uri.Builder uriBuild = Uri.parse(Constants.THEMOVIEDB_BASE_URL).buildUpon()
                         .appendQueryParameter(Constants.SORT_BY_PARAM, params[0])
-                        .appendQueryParameter(Constants.API_KEY_PARAM, apiKey);
+                        .appendQueryParameter(Constants.API_KEY_PARAM, Constants.API_KEY);
 
                 URL url = new URL(uriBuild.toString());
 
@@ -284,7 +283,7 @@ public class PopMoviesFragment extends Fragment{
                 // If the code didn't successfully get the movies data, there's no point in attemping
                 // to parse it.
                 return null;
-            } finally{
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
@@ -315,18 +314,18 @@ public class PopMoviesFragment extends Fragment{
             //List<String> dataFromApi = new ArrayList<String>(Arrays.asList(result));
             String[] arrayPoster = new String[result.length];
 
-            for(int i = 0; i < result.length; i++){
+            for (int i = 0; i < result.length; i++) {
                 arrayPoster[i] = result[i].getmPoster_path();
             }
 
-            for (int i = 0 ; i < arrayPoster.length; i++) {
-            //Log.v(TAG, "Movies entry: " + s);
-            arrayPoster[i] = "http://image.tmdb.org/t/p/w185/" + arrayPoster[i];
-            //mMovieIdArray[i] = "http://api.themoviedb.org/3/movie/"+mMovieIdArray[i]+"/videos?api_key=d3b372f7ac246b674bc0d57687d077f0";
+            for (int i = 0; i < arrayPoster.length; i++) {
+                //Log.v(TAG, "Movies entry: " + s);
+                arrayPoster[i] = "http://image.tmdb.org/t/p/w185/" + arrayPoster[i];
+                //mMovieIdArray[i] = "http://api.themoviedb.org/3/movie/"+mMovieIdArray[i]+"/videos?api_key=d3b372f7ac246b674bc0d57687d077f0";
 
             }
 
-            if(arrayPoster !=null){
+            if (arrayPoster != null) {
 
                 mImageList = new ArrayList<String>(Arrays.asList(arrayPoster));
                 gridAdapter.notifyDataSetChanged();
@@ -341,8 +340,16 @@ public class PopMoviesFragment extends Fragment{
         }
 
 
-
     }
+
+    /**
+     * Fechting Trailers from MoviesDB
+     */
+
 
 
 }
+
+
+
+

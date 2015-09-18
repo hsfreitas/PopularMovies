@@ -12,9 +12,6 @@ import org.json.JSONObject;
  */
 public class Movies implements Parcelable {
 
-
-
-    private String mID;
     private String mOriginal_title;
     private String mRelease_date;
     private String mVote_average;
@@ -22,6 +19,39 @@ public class Movies implements Parcelable {
     private String mMovieId;
     private String[] mMovieIdArray;
     private JSONObject[] mJsonListMovies;
+    private String mPoster_path;
+    private String[] mMovielist;
+    private String[] mPosterPathStr;
+
+
+
+    public Movies(){}
+
+    public Movies(String id, String poster, String title, String release_d, String vote_v, String overview){
+        this.mMovieId = id;
+        this.mPoster_path = poster;
+        this.mOriginal_title = title;
+        this.mRelease_date = release_d;
+        this.mVote_average = vote_v;
+        this.mOverview = overview;
+    }
+
+
+    public Movies(Parcel in){
+        this.mMovieId = in.readString();
+        this.mOriginal_title = in.readString();
+        this.mRelease_date = in.readString();
+        this.mVote_average = in.readString();
+        this.mOverview =in.readString();
+    }
+
+    public JSONObject[] getmJsonListMovies() {
+        return mJsonListMovies;
+    }
+
+    public void setmJsonListMovies(JSONObject[] mJsonListMovies) {
+        this.mJsonListMovies = mJsonListMovies;
+    }
 
     public String getmRelease_date() {
         return mRelease_date;
@@ -39,38 +69,6 @@ public class Movies implements Parcelable {
         this.mMovieId = mMovieId;
     }
 
-    private String mPoster_path;
-    private String[] mMovielist;
-    private String[] mPosterPathStr;
-
-
-
-    public Movies(){}
-
-    public Movies(String id, String poster, String title, String release_d, String vote_v, String overview){
-        this.mID = id;
-        this.mPoster_path = poster;
-        this.mOriginal_title = title;
-        this.mRelease_date = release_d;
-        this.mVote_average = vote_v;
-        this.mOverview = overview;
-    }
-
-
-    public Movies(Parcel in){
-        this.mOriginal_title = in.readString();
-        this.mRelease_date = in.readString();
-        this.mVote_average = in.readString();
-        this.mOverview =in.readString();
-    }
-
-    public JSONObject[] getmJsonListMovies() {
-        return mJsonListMovies;
-    }
-
-    public void setmJsonListMovies(JSONObject[] mJsonListMovies) {
-        this.mJsonListMovies = mJsonListMovies;
-    }
 
     public String[] getmMovielist() {
         return mMovielist;
@@ -88,13 +86,7 @@ public class Movies implements Parcelable {
         this.mOriginal_title = mOriginal_title;
     }
 
-    public String getmID() {
-        return mID;
-    }
 
-    public void setmID(String mID) {
-        this.mID = mID;
-    }
 
     public String getmPoster_path() {
         return mPoster_path;
@@ -165,7 +157,7 @@ public class Movies implements Parcelable {
             // Get the JSON object representing the movie
             JSONObject movie = moviesArray.getJSONObject(i);
 
-            mID = movie.getString(Constants.MOV_ID);
+            mMovieId = movie.getString(Constants.MOV_ID);
 
             //This get movie poster path
             mPoster_path = movie.getString(Constants.MOV_POSTER_PATH);
@@ -182,7 +174,7 @@ public class Movies implements Parcelable {
 
             mJsonListMovies[i] = movie;
 
-            mMovieId = movie.getString(Constants.MOV_ID);
+
             mMovieIdArray[i] = mMovieId;
 
         }
@@ -191,10 +183,8 @@ public class Movies implements Parcelable {
         for (int i = 0 ; i < mPosterPathStr.length; i++) {
             //Log.v(TAG, "Movies entry: " + s);
             mPosterPathStr[i] = "http://image.tmdb.org/t/p/w185/" + mPosterPathStr[i];
-            mMovieIdArray[i] = "http://api.themoviedb.org/3/movie/"+mMovieIdArray[i]+"/videos?api_key=d3b372f7ac246b674bc0d57687d077f0";
 
         }
-        String[] test = mMovieIdArray;
 
         return mPosterPathStr;
 
@@ -207,7 +197,8 @@ public class Movies implements Parcelable {
 
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {;
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mMovieId);
         dest.writeString(this.mOriginal_title);
         dest.writeString(this.mRelease_date);
         dest.writeString(this.mVote_average);

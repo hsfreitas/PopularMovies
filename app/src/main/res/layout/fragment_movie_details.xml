@@ -1,9 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:descendantFocusability="blocksDescendants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?android:attr/listPreferredItemHeight"
@@ -77,6 +79,17 @@
                     android:layout_weight="1"
                     android:textStyle="bold"/>
 
+                <TextView
+                    android:id="@+id/review_label_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:text="Reviews"
+                    android:textSize="15sp"
+                    android:layout_weight="1"
+                    android:textStyle="bold"/>
+
+
+
             </LinearLayout>
 
         </LinearLayout>
@@ -92,6 +105,27 @@
                 android:text="@string/synopsis_txt"
                 android:textSize="15sp"
                 android:padding="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/details_trailers_label"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:padding="10dp"/>
+            <ListView
+                android:id="@+id/listview_id"
+                android:layout_width="wrap_content"
+                android:layout_height="213dp"
+                android:padding="10dp">
+
+            </ListView>
+
         </LinearLayout>
     </LinearLayout>
 
