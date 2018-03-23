@@ -220,7 +220,7 @@ public class PopMoviesFragment extends Fragment{
             String moviesJsonStr = null;
 
             //String my api Key
-            String apiKey = "";
+            String apiKey = "d3b372f7ac246b674bc0d57687d077f0";
 
 
             try {
